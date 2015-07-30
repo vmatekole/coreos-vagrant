@@ -11,14 +11,15 @@ CONFIG = File.join(File.dirname(__FILE__), "config.rb")
 # Defaults for config options defined in CONFIG
 $num_instances = 1
 $instance_name_prefix = "core"
-$update_channel = "alpha"
+$update_channel = "beta"
 $enable_serial_logging = false
 $share_home = false
 $vm_gui = false
-$vm_memory = 1024
+$vm_memory = 2048
 $vm_cpus = 1
 $shared_folders = {}
-$forwarded_ports = {}
+$forwarded_ports = {9200=>9200,5432=>5432,8081=>8081}
+$expose_docker_tcp = 2375
 
 # Attempt to apply the deprecated environment variable NUM_INSTANCES to
 # $num_instances while allowing config.rb to override it
@@ -47,6 +48,11 @@ Vagrant.configure("2") do |config|
   # always use Vagrants insecure key
   config.ssh.insert_key = false
 
+  config.vm.network "private_network", ip: "172.17.8.150"
+  config.vm.synced_folder "/Users/Shared/code", "/apps", id: "oklahoma", :nfs => true, :mount_options   => ['nolock']
+  config.vm.synced_folder "/Users/Shared/code/configurations", "/home/core/configurations", id: "configurations", :nfs => true, :mount_options   => ['nolock,vers=3,udp']
+  
+  config.vm.provision :shell, :inline => "export DOCKER_HOST=tcp://core-01:2375/", :privileged => true  
   config.vm.box = "coreos-%s" % $update_channel
   config.vm.box_version = ">= 308.0.1"
   config.vm.box_url = "http://%s.release.core-os.net/amd64-usr/current/coreos_production_vagrant.json" % $update_channel
@@ -127,7 +133,7 @@ Vagrant.configure("2") do |config|
       end
 
       if $share_home
-        config.vm.synced_folder ENV['HOME'], ENV['HOME'], id: "home", :nfs => true, :mount_options => ['nolock,vers=3,udp']
+        config.vm.synced_folder ENV['HOME'], ENV['HOME'], id: "home", :rsync => true, :mount_options => ['nolock,vers=3,udp']
       end
 
       if File.exist?(CLOUD_CONFIG_PATH)
