@@ -49,7 +49,7 @@ Vagrant.configure("2") do |config|
   config.ssh.insert_key = false
 
   config.vm.network "private_network", ip: "172.17.8.150"
-  config.vm.synced_folder "/Users/olha", "/apps", id: "oklahoma", :nfs => true, :mount_options   => ['nolock']
+  config.vm.synced_folder "/Users/olha/Projects", "/apps", id: "oklahoma", :nfs => true, :mount_options   => ['nolock']
   config.vm.synced_folder "/Users/Shared/code/configurations", "/home/core/configurations", id: "configurations", :nfs => true, :mount_options   => ['nolock,vers=3,udp']
   
   config.vm.provision :shell, :inline => "export DOCKER_HOST=tcp://core-01:2375/", :privileged => true  
