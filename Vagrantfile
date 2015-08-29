@@ -15,10 +15,10 @@ $update_channel = "beta"
 $enable_serial_logging = false
 $share_home = false
 $vm_gui = false
-$vm_memory = 2048
+$vm_memory = 3072
 $vm_cpus = 1
 $shared_folders = {}
-$forwarded_ports = {9200=>9200,5432=>5432,8081=>8081}
+$forwarded_ports = {9200=>9200,5432=>5432,8081=>8081,8082=>8082}
 $expose_docker_tcp = 2375
 
 # Attempt to apply the deprecated environment variable NUM_INSTANCES to
